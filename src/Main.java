@@ -46,11 +46,16 @@ public class Main {
         byte[] tamanhoTecnologiaOrigemBytes = convertIntToFixedBytes(tamanhoTecnologiaOrigem, 4);
         byte[] tamanhoTecnologiaDestinoBytes = convertIntToFixedBytes(tamanhoTecnologiaDestino, 4);
 
-        // Agora, nomeTecnologiaOrigem e nomeTecnologiaDestino têm tamanho variável baseado no tamanhoTecnologiaOrigem e tamanhoTecnologiaDestino
+        // Tamanho variável
         byte[] nomeTecnologiaOrigemBytes = convertStringToFixedBytes(nomeTecnologiaOrigem, tamanhoTecnologiaOrigem);
         byte[] nomeTecnologiaDestinoBytes = convertStringToFixedBytes(nomeTecnologiaDestino, tamanhoTecnologiaDestino);
 
-        // Exibir corretamente os números inteiros ao invés de interpretá-los diretamente como string
+        // Exibindo a forma com a qual a linha do banco de dados vai ser apresentada
+        showDBLine(removidoBytes, grupoBytes, popularidadeBytes, pesoBytes, tamanhoTecnologiaOrigemBytes, nomeTecnologiaOrigemBytes, tamanhoTecnologiaDestinoBytes, nomeTecnologiaDestinoBytes);
+
+    }
+
+    public static void showDBLine (byte[] removidoBytes, byte[] grupoBytes, byte[] popularidadeBytes, byte[] pesoBytes, byte[] tamanhoTecnologiaOrigemBytes, byte[] nomeTecnologiaOrigemBytes, byte[] tamanhoTecnologiaDestinoBytes, byte[] nomeTecnologiaDestinoBytes) {
         System.out.println(new String(removidoBytes) + " " +
                 new String(grupoBytes) + " " +
                 new String(popularidadeBytes) + " " +
