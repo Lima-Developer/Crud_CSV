@@ -1,22 +1,38 @@
+import Domain.Models.DataBase;
+import Domain.Models.DataBaseLine;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        try (RandomAccessFile raf = new RandomAccessFile("tecnologia.csv", "r")) {
-            String line;
+        Scanner scanner = new Scanner(System.in);
 
-            // Ler e ignorar a primeira linha (cabeçalho)
-            raf.readLine();  // Ignora a primeira linha
+        lerCSV("tecnologia.csv", "r");
+    }
+
+    public static void lerCSV(String inputFile, String mode) {
+        try(RandomAccessFile raf = new RandomAccessFile(inputFile, mode)) {
+            String line;
+            raf.readLine(); // Ignorando linha do cabeçalho
 
             int numLinhas = 0;
-            while ((line = raf.readLine()) != null && numLinhas != 10) {
+
+            // Criando a instancia do banco de dados
+            DataBase dataBase = new DataBase();
+
+            while ((line = raf.readLine()) != null ) {
                 String[] values = line.split(",");
-                // Chama o método para processar os dados da linha
-                intoLineDB(values);
+                DataBaseLine dataBaseLine = new DataBaseLine(values);
+
+                // Criando a tabela com base na linha atual
+                dataBase.createTable(dataBaseLine);
+
+                // Exibindo a linha armazenada no banco de dados
+                dataBase.showDBLine();
+
                 numLinhas++;
             }
             System.out.println("Total de linhas processadas: " + numLinhas);
@@ -25,63 +41,4 @@ public class Main {
         }
     }
 
-    // Função que transforma cada campo em um array de bytes com tamanho fixo ou variável
-    public static void intoLineDB(String[] csvLine) throws IOException {
-        String nomeTecnologiaOrigem = csvLine[0];
-        int tamanhoTecnologiaOrigem = nomeTecnologiaOrigem.length();
-        String grupo = csvLine[1];
-        String popularidade = csvLine[2];
-        String nomeTecnologiaDestino = csvLine[3];
-        int tamanhoTecnologiaDestino = nomeTecnologiaDestino.length();
-        String peso = csvLine[4];
-        String removido = String.valueOf(0);  // Sempre 0, 1 byte
-
-        // Converter cada campo em array de bytes
-        byte[] removidoBytes = convertStringToFixedBytes(removido, 1);
-        byte[] grupoBytes = convertStringToFixedBytes(grupo, 4);
-        byte[] popularidadeBytes = convertStringToFixedBytes(popularidade, 4);
-        byte[] pesoBytes = convertStringToFixedBytes(peso, 4);
-
-        // Converter os tamanhos de tecnologia para arrays de bytes com tamanho fixo (4 bytes)
-        byte[] tamanhoTecnologiaOrigemBytes = convertIntToFixedBytes(tamanhoTecnologiaOrigem, 4);
-        byte[] tamanhoTecnologiaDestinoBytes = convertIntToFixedBytes(tamanhoTecnologiaDestino, 4);
-
-        // Tamanho variável
-        byte[] nomeTecnologiaOrigemBytes = convertStringToFixedBytes(nomeTecnologiaOrigem, tamanhoTecnologiaOrigem);
-        byte[] nomeTecnologiaDestinoBytes = convertStringToFixedBytes(nomeTecnologiaDestino, tamanhoTecnologiaDestino);
-
-        // Exibindo a forma com a qual a linha do banco de dados vai ser apresentada
-        showDBLine(removidoBytes, grupoBytes, popularidadeBytes, pesoBytes, tamanhoTecnologiaOrigemBytes, nomeTecnologiaOrigemBytes, tamanhoTecnologiaDestinoBytes, nomeTecnologiaDestinoBytes);
-
-    }
-
-    public static void showDBLine (byte[] removidoBytes, byte[] grupoBytes, byte[] popularidadeBytes, byte[] pesoBytes, byte[] tamanhoTecnologiaOrigemBytes, byte[] nomeTecnologiaOrigemBytes, byte[] tamanhoTecnologiaDestinoBytes, byte[] nomeTecnologiaDestinoBytes) {
-        System.out.println(new String(removidoBytes) + " " +
-                new String(grupoBytes) + " " +
-                new String(popularidadeBytes) + " " +
-                new String(pesoBytes) + " " +
-                ByteBuffer.wrap(tamanhoTecnologiaOrigemBytes).getInt() + " " +  // Converte de volta para int
-                new String(nomeTecnologiaOrigemBytes) + " " +
-                ByteBuffer.wrap(tamanhoTecnologiaDestinoBytes).getInt() + " " +  // Converte de volta para int
-                new String(nomeTecnologiaDestinoBytes));
-    }
-
-    // Método para converter uma string em um array de bytes de tamanho fixo ou variável
-    public static byte[] convertStringToFixedBytes(String input, int tamanho) {
-        byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
-        if (bytes.length > tamanho) {
-            // Trunca se o comprimento for maior que o tamanho desejado
-            return new String(bytes, 0, tamanho, StandardCharsets.UTF_8).getBytes(StandardCharsets.UTF_8);
-        } else {
-            // Se for menor ou igual ao tamanho desejado, retorna como está
-            return bytes;
-        }
-    }
-
-    // Método para converter um int em um array de bytes de tamanho fixo (4 bytes)
-    public static byte[] convertIntToFixedBytes(int valor, int tamanho) {
-        ByteBuffer buffer = ByteBuffer.allocate(tamanho);
-        buffer.putInt(valor);
-        return buffer.array();  // Retorna os 4 bytes do inteiro
-    }
 }
