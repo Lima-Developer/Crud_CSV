@@ -81,10 +81,10 @@ public class DataBase {
 
         // Imprime o cabeçalho apenas se ainda não foi impresso
         if (!headerPrinted) {
-            System.out.println(String.format("%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s",
-                    "Status", "Grupo", "Popularidade", "Peso", "Tamanho Origem", "Nome Origem",
-                    "Tamanho Destino", "Nome Destino"));
-            System.out.println("-----------------------------------------------------------------------");
+            System.out.println(String.format("\n%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s",
+                    "STATUS", "GRUPO", "POPULARIDADE", "PESO", "TAMANHO ORIGEM", "NOME ORIGEM",
+                    "TAMANHO DESTINO", "NOME DESTINO"));
+            System.out.println("----------------------------------------------------------------------------------------------------------------");
             headerPrinted = true; // Marca como impresso
         }
 
