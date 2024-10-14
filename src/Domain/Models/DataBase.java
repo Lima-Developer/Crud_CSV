@@ -110,6 +110,7 @@ public class DataBase {
             count++;
             if (line == count && line != 0) {
                 System.out.println(Line);
+                break;
             }
         }
     }
