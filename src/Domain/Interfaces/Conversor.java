@@ -19,7 +19,7 @@ public interface Conversor {
     private static byte[] convertIntToFixedBytes(int valor, int tamanho) {
         ByteBuffer buffer = ByteBuffer.allocate(tamanho);
         buffer.putInt(valor);
-        return buffer.array();  // Retorna os 4 bytes do inteiro
+        return buffer.array(); // Retorna os 4 bytes do inteiro
     }
 
     static byte[] intoBytes(Object input, int tamanho) {

@@ -47,12 +47,14 @@ public class Main implements CSV {
 
                     int line = scanner.nextInt();
                     dataBase.deleteRegister(line);
+                    continue;
                 case 6:
                     // Undelete Register
                     System.out.print("Informe a linha do registro que quer recuperar: ");
 
                     line = scanner.nextInt();
                     dataBase.undeleteRegister(line);
+                    continue;
                 case 7:
                     System.out.println("Saindo do programa");
                     break;
