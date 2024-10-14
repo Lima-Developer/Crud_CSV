@@ -1,44 +1,54 @@
-import Domain.Models.DataBase;
-import Domain.Models.DataBaseLine;
+import Domain.Interfaces.CSV;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.Scanner;
 
-public class Main {
+public class Main implements CSV {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        int opcao = 0;
+        while (opcao != 7) {
+            System.out.println("\n================ Menu =================");
+            System.out.println("1- Cadastrar banco de dados");
+            System.out.println("2- Exibir banco de dados");
+            System.out.println("3- Inserir registro");
+            System.out.println("4- Atualizar registo");
+            System.out.println("5- Deletar registro");
+            System.out.println("6- Recuperar registros removidos");
+            System.out.println("7- Sair");
+            System.out.println("=======================================");
+            System.out.print("Escolha uma opção: ");
 
-        lerCSV("tecnologia.csv", "r");
-    }
+            opcao = scanner.nextInt();
+            scanner.nextLine();
 
-    public static void lerCSV(String inputFile, String mode) {
-        try(RandomAccessFile raf = new RandomAccessFile(inputFile, mode)) {
-            String line;
-            raf.readLine(); // Ignorando linha do cabeçalho
+            switch (opcao) {
+                case 1:
+                    System.out.print("Informe o nome do arquivo .csv: ");
 
-            int numLinhas = 0;
-
-            // Criando a instancia do banco de dados
-            DataBase dataBase = new DataBase();
-
-            while ((line = raf.readLine()) != null ) {
-                String[] values = line.split(",");
-                DataBaseLine dataBaseLine = new DataBaseLine(values);
-
-                // Criando a tabela com base na linha atual
-                dataBase.createTable(dataBaseLine);
-
-                // Exibindo a linha armazenada no banco de dados
-                dataBase.showDBLine();
-
-                numLinhas++;
+                    String filePath = scanner.nextLine();
+                    CSV.readCSV(filePath);
+                    // Create Table
+                    continue;
+                case 2:
+                    // Select Table
+                    continue;
+                case 3:
+                    // Insert Register
+                    continue;
+                case 4:
+                    // Update Register
+                    continue;
+                case 5:
+                    // Delete Register
+                case 6:
+                    // Undelete Register
+                case 7:
+                    System.out.println("Saindo do programa");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
             }
-            System.out.println("Total de linhas processadas: " + numLinhas);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
-
 }
