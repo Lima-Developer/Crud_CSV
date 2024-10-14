@@ -24,12 +24,12 @@ public class Main implements CSV {
 
             switch (opcao) {
                 case 1:
+                    // Create Table
                     System.out.print("Informe o nome do arquivo .csv: ");
 
                     String filePath = scanner.nextLine();
                     CSV.readCSV(filePath);
-                    // Create Table
-                    continue;
+                    break;
                 case 2:
                     // Select Table
                     continue;
