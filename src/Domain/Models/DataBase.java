@@ -109,7 +109,7 @@ public class DataBase {
         for (byte Line : dbLine) {
             count++;
             if (line == count && line != 0) {
-                System.out.println(line);
+                System.out.println(Line);
             }
         }
     }
