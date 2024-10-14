@@ -105,18 +105,8 @@ public class DataBase {
     }
 
     public void deleteRegister(int line) {
-        int count = 0;
-        for (byte Line : dbLine) {
-            count++;
-            if (line == count && line != 0) {
-                System.out.println(Line);
-                break;
-            }
-        }
     }
 
     public void undeleteRegister(int line) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'undeleteRegister'");
     }
 }
