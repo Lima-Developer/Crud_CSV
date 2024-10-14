@@ -1,8 +1,10 @@
 import Domain.Interfaces.CSV;
+import Domain.Models.DataBase;
 
 import java.util.Scanner;
 
 public class Main implements CSV {
+    protected static DataBase dataBase = new DataBase();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -28,7 +30,7 @@ public class Main implements CSV {
                     System.out.print("Informe o nome do arquivo .csv: ");
 
                     String filePath = scanner.nextLine();
-                    CSV.readCSV(filePath);
+                    dataBase = CSV.readCSV(filePath);
                     break;
                 case 2:
                     // Select Table
@@ -41,8 +43,16 @@ public class Main implements CSV {
                     continue;
                 case 5:
                     // Delete Register
+                    System.out.print("Informe a linha do registro que quer deletar: ");
+
+                    int line = scanner.nextInt();
+                    dataBase.deleteRegister(line);
                 case 6:
                     // Undelete Register
+                    System.out.print("Informe a linha do registro que quer recuperar: ");
+
+                    line = scanner.nextInt();
+                    dataBase.undeleteRegister(line);
                 case 7:
                     System.out.println("Saindo do programa");
                     break;

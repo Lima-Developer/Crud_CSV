@@ -32,10 +32,14 @@ public class DataBase {
         System.arraycopy(dataBaseLine.getGrupoBytes(), 0, dbLine, 1, dataBaseLine.getGrupoBytes().length);
         System.arraycopy(dataBaseLine.getPopularidadeBytes(), 0, dbLine, 5, dataBaseLine.getPopularidadeBytes().length);
         System.arraycopy(dataBaseLine.getPesoBytes(), 0, dbLine, 9, dataBaseLine.getPesoBytes().length);
-        System.arraycopy(dataBaseLine.getTamanhoTecnologiaOrigemBytes(), 0, dbLine, 13, dataBaseLine.getTamanhoTecnologiaOrigemBytes().length);
-        System.arraycopy(dataBaseLine.getNomeTecnologiaOrigemBytes(), 0, dbLine, 17, dataBaseLine.getNomeTecnologiaOrigemBytes().length);
-        System.arraycopy(dataBaseLine.getTamanhoTecnologiaDestinoBytes(), 0, dbLine, 37, dataBaseLine.getTamanhoTecnologiaDestinoBytes().length);
-        System.arraycopy(dataBaseLine.getNomeTecnologiaDestinoBytes(), 0, dbLine, 41, dataBaseLine.getNomeTecnologiaDestinoBytes().length);
+        System.arraycopy(dataBaseLine.getTamanhoTecnologiaOrigemBytes(), 0, dbLine, 13,
+                dataBaseLine.getTamanhoTecnologiaOrigemBytes().length);
+        System.arraycopy(dataBaseLine.getNomeTecnologiaOrigemBytes(), 0, dbLine, 17,
+                dataBaseLine.getNomeTecnologiaOrigemBytes().length);
+        System.arraycopy(dataBaseLine.getTamanhoTecnologiaDestinoBytes(), 0, dbLine, 37,
+                dataBaseLine.getTamanhoTecnologiaDestinoBytes().length);
+        System.arraycopy(dataBaseLine.getNomeTecnologiaDestinoBytes(), 0, dbLine, 41,
+                dataBaseLine.getNomeTecnologiaDestinoBytes().length);
 
         // Grava os dados no arquivo dataBase.txt
         writeDataToFile();
@@ -72,7 +76,8 @@ public class DataBase {
         byte[] nomeOrigemBytes = Arrays.copyOfRange(dbLine, 17, 37); // Assume o campo de origem é de tamanho fixo
         byte[] nomeDestinoBytes = Arrays.copyOfRange(dbLine, 41, 61); // Assume o campo de destino é de tamanho fixo
 
-        // Converte os campos para strings e substitui '*' por espaços para uma visualização mais limpa
+        // Converte os campos para strings e substitui '*' por espaços para uma
+        // visualização mais limpa
         String grupo = new String(grupoBytes, StandardCharsets.UTF_8).replace("*", " ");
         String popularidade = new String(popularidadeBytes, StandardCharsets.UTF_8).replace("*", " ");
         String peso = new String(pesoBytes, StandardCharsets.UTF_8).replace("*", " ");
@@ -84,7 +89,8 @@ public class DataBase {
             System.out.println(String.format("\n%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s",
                     "STATUS", "GRUPO", "POPULARIDADE", "PESO", "TAMANHO ORIGEM", "NOME ORIGEM",
                     "TAMANHO DESTINO", "NOME DESTINO"));
-            System.out.println("----------------------------------------------------------------------------------------------------------------");
+            System.out.println(
+                    "----------------------------------------------------------------------------------------------------------------");
             headerPrinted = true; // Marca como impresso
         }
 
@@ -92,10 +98,19 @@ public class DataBase {
         String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16d | %-12s | %-16d | %-12s",
                 removido, grupo, popularidade, peso,
                 tamanhoOrigem, nomeOrigem,
-                tamanhoDestino, nomeDestino
-        );
+                tamanhoDestino, nomeDestino);
 
         // Exibe o resultado formatado
         System.out.println(resultado);
+    }
+
+    public void deleteRegister(int line) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteRegister'");
+    }
+
+    public void undeleteRegister(int line) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'undeleteRegister'");
     }
 }

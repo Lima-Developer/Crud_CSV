@@ -8,8 +8,8 @@ import java.io.RandomAccessFile;
 
 public interface CSV {
 
-    static void readCSV(String inputFile) {
-        try(RandomAccessFile raf = new RandomAccessFile(inputFile.concat(".csv"), "r")) {
+    static DataBase readCSV(String inputFile) {
+        try (RandomAccessFile raf = new RandomAccessFile(inputFile.concat(".csv"), "r")) {
             String line;
 
             raf.readLine(); // Ignorando linha do cabeçalho
@@ -19,7 +19,7 @@ public interface CSV {
             // Criando a instancia do banco de dados
             DataBase dataBase = new DataBase();
 
-            while ((line = raf.readLine()) != null ) {
+            while ((line = raf.readLine()) != null) {
                 String[] values = line.split(",");
                 DataBaseLine dataBaseLine = new DataBaseLine(values);
 
@@ -34,6 +34,7 @@ public interface CSV {
             System.out.println("\nTotal de linhas processadas: " + numLinhas);
 
             System.out.println("\n|================= TABELA NO BANCO DE DADOS CRIADA COM SUCESSO! =================|");
+            return dataBase;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
