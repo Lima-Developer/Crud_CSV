@@ -50,5 +50,6 @@ public class Main implements CSV {
                     System.out.println("Opção inválida. Tente novamente.");
             }
         }
+        scanner.close();
     }
 }
