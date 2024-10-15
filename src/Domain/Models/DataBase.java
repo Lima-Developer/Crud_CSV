@@ -1,5 +1,7 @@
 package Domain.Models;
 
+import Domain.Interfaces.Conversor;
+
 import java.util.Scanner;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -9,7 +11,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DataBase {
+public class DataBase implements Conversor {
     private byte[] dbLine;
     private boolean headerPrinted; // Variável para controlar a impressão do cabeçalho
 
@@ -142,6 +144,120 @@ public class DataBase {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void updateRegister (int line) throws IOException {
+        try (RandomAccessFile file = new RandomAccessFile("dataBase.txt", "rw")) {
+
+            int tamRegistro = 76;
+            byte[] grupoBytes, popularidadeBytes, pesoBytes, nomeOrigemBytes, nomeDestinoBytes;
+
+            //Posição do registro no arquivo
+            long pos = (long) line * tamRegistro;
+
+            file.seek(pos);
+
+            //Ler o registro
+            byte[] registro = new byte[tamRegistro];
+            file.read(registro);
+
+            //Mostrar o registro atual
+            System.out.println("Registro Atual:");
+            System.out.println(new String(registro, StandardCharsets.UTF_8));
+
+            //Usuário digita campo ele deseja atualizar
+            Scanner teclado = new Scanner(System.in);
+            System.out.println("Qual campo deseja atualizar?");
+            System.out.print("""
+                    1. Grupo
+                    2. Popularidade
+                    3. Peso
+                    4. Nome Origem
+                    5. Nome Destino
+                                        
+                    Escolha:\s""");
+            int escolha = teclado.nextInt();
+            teclado.nextLine();
+
+            //Usuário digitar o valor novo
+            System.out.print("Insira o novo valor: ");
+            String valorAtualizado = teclado.nextLine();
+
+            //Atualizando o campo selecionado
+            switch (escolha) {
+                case 1:
+                    grupoBytes = Conversor.intoBytes(valorAtualizado, 4);
+
+                    if (grupoBytes.length < 4) { // Verifica se grupoBytes tem 4 bytes
+                        byte[] paddedGrupoBytes = new byte[4];
+                        System.arraycopy(grupoBytes, 0, paddedGrupoBytes, 0, grupoBytes.length);
+                        Arrays.fill(paddedGrupoBytes, grupoBytes.length, 4, (byte) '*');
+                        grupoBytes = paddedGrupoBytes;
+                    }
+
+                    System.arraycopy(grupoBytes, 0, registro, 1, 4);
+                    break;
+
+                case 2:
+                    popularidadeBytes = Conversor.intoBytes(valorAtualizado, 4);
+
+                    if (popularidadeBytes.length < 4) {
+                        byte[] paddedPopularidadeBytes = new byte[4];
+                        System.arraycopy(popularidadeBytes, 0, paddedPopularidadeBytes, 0, popularidadeBytes.length);
+                        Arrays.fill(paddedPopularidadeBytes, popularidadeBytes.length, 4, (byte) '*');
+                        popularidadeBytes = paddedPopularidadeBytes;
+                    }
+
+                    System.arraycopy(popularidadeBytes, 0, registro, 5, 4); // Atualiza o campo popularidade
+                    break;
+
+                case 3:
+                    pesoBytes = Conversor.intoBytes(valorAtualizado, 4);
+
+                    if (pesoBytes.length < 4) {
+                        byte[] paddedPesoBytes = new byte[4];
+                        System.arraycopy(pesoBytes, 0, paddedPesoBytes, 0, pesoBytes.length);
+                        Arrays.fill(paddedPesoBytes, pesoBytes.length, 4, (byte) '*');
+                        pesoBytes = paddedPesoBytes;
+                    }
+
+                    System.arraycopy(pesoBytes, 0, registro, 9, 4); // Atualiza o campo peso
+                    break;
+
+                case 4:
+                    nomeOrigemBytes = Conversor.intoBytes(valorAtualizado, 20);
+
+                    if (nomeOrigemBytes.length < 20) {
+                        byte[] paddedNomeOrigemBytes = new byte[20];
+                        System.arraycopy(nomeOrigemBytes, 0, paddedNomeOrigemBytes, 0, nomeOrigemBytes.length);
+                        Arrays.fill(paddedNomeOrigemBytes, nomeOrigemBytes.length, 20, (byte) '*');
+                        nomeOrigemBytes = paddedNomeOrigemBytes;
+                    }
+
+                    System.arraycopy(nomeOrigemBytes, 0, registro, 17, 20); // Atualiza o campo Nome Origem
+                    break;
+
+                case 5:
+                    nomeDestinoBytes = Conversor.intoBytes(valorAtualizado, 20);
+
+                    if (nomeDestinoBytes.length < 20) {
+                        byte[] paddedNomeDestinoBytes = new byte[20];
+                        System.arraycopy(nomeDestinoBytes, 0, paddedNomeDestinoBytes, 0, nomeDestinoBytes.length);
+                        Arrays.fill(paddedNomeDestinoBytes, nomeDestinoBytes.length, 20, (byte) '*');
+                        nomeDestinoBytes = paddedNomeDestinoBytes;
+                    }
+
+                    System.arraycopy(nomeDestinoBytes, 0, registro, 41, 20); // Atualiza o campo Nome Destino
+                    break;
+            }
+
+                file.seek(pos);
+                file.write(registro);
+
+                System.out.println("Registro atualizado!");
+            } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
