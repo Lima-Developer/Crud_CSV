@@ -110,7 +110,7 @@ public class DataBase implements Conversor {
     public void deleteRegister(int register) {
         try (RandomAccessFile raf = new RandomAccessFile("dataBase.txt", "rw")) {
 
-            long pointer = (register - 1) * 76;
+            long pointer = (register) * 76;
             raf.seek(pointer);
 
             byte[] bLine = new byte[76];
@@ -129,7 +129,7 @@ public class DataBase implements Conversor {
     public void undeleteRegister(int register) {
         try (RandomAccessFile raf = new RandomAccessFile("dataBase.txt", "rw")) {
 
-            long pointer = (register - 1) * 76;
+            long pointer = (register) * 76;
             raf.seek(pointer);
 
             byte[] bLine = new byte[76];
@@ -152,9 +152,9 @@ public class DataBase implements Conversor {
             byte[] grupoBytes, popularidadeBytes, pesoBytes, nomeOrigemBytes, nomeDestinoBytes;
 
             // Posição do registro no arquivo
-            long pos = (long) rrn * tamRegistro;
+            long offset = (long) rrn * tamRegistro;
 
-            file.seek(pos);
+            file.seek(offset);
 
             // Ler o registro
             byte[] registro = new byte[tamRegistro];
@@ -250,7 +250,7 @@ public class DataBase implements Conversor {
                     break;
             }
 
-            file.seek(pos);
+            file.seek(offset);
             file.write(registro);
 
             System.out.println("Registro atualizado!");
