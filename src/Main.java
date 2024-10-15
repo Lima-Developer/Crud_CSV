@@ -59,12 +59,11 @@ public class Main implements CSV {
                     continue;
                 case 5:
                     // Delete Register
-                    int line;
                     try {
                         System.out.println("Informe a linha do registro que quer deletar: ");
 
-                        line = scanner.nextInt();
-                        dataBase.deleteRegister(line);
+                        rrn = scanner.nextInt();
+                        dataBase.deleteRegister(rrn);
                     } catch (Exception e) {
                         System.out.println("Ocorreu um erro, voltando para o menu.");
                         System.out.println("-------------------------------------");
@@ -76,8 +75,8 @@ public class Main implements CSV {
                     try {
                         System.out.print("Informe a linha do registro que quer recuperar: ");
 
-                        line = scanner.nextInt();
-                        dataBase.undeleteRegister(line);
+                        rrn = scanner.nextInt();
+                        dataBase.undeleteRegister(rrn);
                     } catch (Exception e) {
                         System.out.println("Ocorreu um erro, voltando para o menu.");
                         System.out.println("-------------------------------------");

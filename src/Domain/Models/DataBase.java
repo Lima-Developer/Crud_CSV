@@ -37,10 +37,14 @@ public class DataBase implements Conversor {
         System.arraycopy(dataBaseLine.getGrupoBytes(), 0, dbLine, 1, dataBaseLine.getGrupoBytes().length);
         System.arraycopy(dataBaseLine.getPopularidadeBytes(), 0, dbLine, 5, dataBaseLine.getPopularidadeBytes().length);
         System.arraycopy(dataBaseLine.getPesoBytes(), 0, dbLine, 9, dataBaseLine.getPesoBytes().length);
-        System.arraycopy(dataBaseLine.getTamanhoTecnologiaOrigemBytes(), 0, dbLine, 13, dataBaseLine.getTamanhoTecnologiaOrigemBytes().length);
-        System.arraycopy(dataBaseLine.getNomeTecnologiaOrigemBytes(), 0, dbLine, 17, dataBaseLine.getNomeTecnologiaOrigemBytes().length);
-        System.arraycopy(dataBaseLine.getTamanhoTecnologiaDestinoBytes(), 0, dbLine, 37, dataBaseLine.getTamanhoTecnologiaDestinoBytes().length);
-        System.arraycopy(dataBaseLine.getNomeTecnologiaDestinoBytes(), 0, dbLine, 41, dataBaseLine.getNomeTecnologiaDestinoBytes().length);
+        System.arraycopy(dataBaseLine.getTamanhoTecnologiaOrigemBytes(), 0, dbLine, 13,
+                dataBaseLine.getTamanhoTecnologiaOrigemBytes().length);
+        System.arraycopy(dataBaseLine.getNomeTecnologiaOrigemBytes(), 0, dbLine, 17,
+                dataBaseLine.getNomeTecnologiaOrigemBytes().length);
+        System.arraycopy(dataBaseLine.getTamanhoTecnologiaDestinoBytes(), 0, dbLine, 37,
+                dataBaseLine.getTamanhoTecnologiaDestinoBytes().length);
+        System.arraycopy(dataBaseLine.getNomeTecnologiaDestinoBytes(), 0, dbLine, 41,
+                dataBaseLine.getNomeTecnologiaDestinoBytes().length);
 
         // Grava os dados no arquivo dataBase.txt
         writeDataToFile();
@@ -83,13 +87,17 @@ public class DataBase implements Conversor {
 
         // Imprime o cabeçalho apenas se ainda não foi impresso
         if (!headerPrinted) {
-            System.out.println(String.format("\n%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s", "STATUS", "GRUPO", "POPULARIDADE", "PESO", "TAMANHO ORIGEM", "NOME ORIGEM", "TAMANHO DESTINO", "NOME DESTINO"));
-            System.out.println("----------------------------------------------------------------------------------------------------------------");
+            System.out.println(String.format("\n%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s", "STATUS",
+                    "GRUPO", "POPULARIDADE", "PESO", "TAMANHO ORIGEM", "NOME ORIGEM", "TAMANHO DESTINO",
+                    "NOME DESTINO"));
+            System.out.println(
+                    "----------------------------------------------------------------------------------------------------------------");
             headerPrinted = true; // Marca como impresso
         }
 
         // Formata a saída de forma mais amigável
-        String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s", removido, grupo, popularidade, peso, tamanhoOrigem, nomeOrigem, tamanhoDestino, nomeDestino);
+        String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s", removido, grupo,
+                popularidade, peso, tamanhoOrigem, nomeOrigem, tamanhoDestino, nomeDestino);
 
         // Exibe o resultado formatado
         System.out.println(resultado);
@@ -97,26 +105,18 @@ public class DataBase implements Conversor {
 
     public void deleteRegister(int register) {
         try (RandomAccessFile raf = new RandomAccessFile("dataBase.txt", "rw")) {
-            String line;
-            long pointer = 0;
-            if (register == 0) throw new RuntimeException("Não é possível alterar o cabeçalho");
-            int count = 1;
 
-            while ((line = raf.readLine()) != null) {
-                byte[] bLine = line.getBytes(StandardCharsets.UTF_8);
+            long pointer = (register - 1) * 76;
+            raf.seek(pointer);
 
-                if (register == count) {
-                    bLine[0] = '1';
-                    raf.seek(pointer);
-                    raf.write(bLine);
+            byte[] bLine = new byte[76];
+            raf.readFully(bLine);
 
-                    System.out.println("\nRegistro " + register + " marcado como removido!");
-                    break;
-                } else {
-                    pointer = raf.getFilePointer();
-                    count++;
-                }
-            }
+            bLine[0] = '1';
+            raf.seek(pointer);
+            raf.write(bLine);
+
+            System.out.println("\nRegistro " + register + " marcado como removido!");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -124,49 +124,43 @@ public class DataBase implements Conversor {
 
     public void undeleteRegister(int register) {
         try (RandomAccessFile raf = new RandomAccessFile("dataBase.txt", "rw")) {
-            String line;
-            long pointer = 0;
-            int count = 1;
 
-            while ((line = raf.readLine()) != null) {
-                byte[] bLine = line.getBytes(StandardCharsets.UTF_8);
+            long pointer = (register - 1) * 76;
+            raf.seek(pointer);
 
-                if (register == count) {
-                    bLine[0] = '0';
-                    raf.seek(pointer);
-                    raf.write(bLine);
-                    System.out.println("\nRegistro " + register + " marcado como removido!");
-                    break;
-                } else {
-                    pointer = raf.getFilePointer(); // Atualiza a posição do ponteiro antes da próxima leitura
-                    count++;
-                }
-            }
+            byte[] bLine = new byte[76];
+            raf.readFully(bLine);
+
+            bLine[0] = '0';
+            raf.seek(pointer);
+            raf.write(bLine);
+
+            System.out.println("\nRegistro " + register + " restaurado!");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void updateRegister (int line) throws IOException {
+    public void updateRegister(int rrn) throws IOException {
         try (RandomAccessFile file = new RandomAccessFile("dataBase.txt", "rw")) {
 
             int tamRegistro = 76;
             byte[] grupoBytes, popularidadeBytes, pesoBytes, nomeOrigemBytes, nomeDestinoBytes;
 
-            //Posição do registro no arquivo
-            long pos = (long) line * tamRegistro;
+            // Posição do registro no arquivo
+            long pos = (long) rrn * tamRegistro;
 
             file.seek(pos);
 
-            //Ler o registro
+            // Ler o registro
             byte[] registro = new byte[tamRegistro];
             file.read(registro);
 
-            //Mostrar o registro atual
+            // Mostrar o registro atual
             System.out.println("Registro Atual:");
             System.out.println(new String(registro, StandardCharsets.UTF_8));
 
-            //Usuário digita campo ele deseja atualizar
+            // Usuário digita campo ele deseja atualizar
             Scanner teclado = new Scanner(System.in);
             System.out.println("Qual campo deseja atualizar?");
             System.out.print("""
@@ -175,16 +169,16 @@ public class DataBase implements Conversor {
                     3. Peso
                     4. Nome Origem
                     5. Nome Destino
-                                        
+
                     Escolha:\s""");
             int escolha = teclado.nextInt();
             teclado.nextLine();
 
-            //Usuário digitar o valor novo
+            // Usuário digitar o valor novo
             System.out.print("Insira o novo valor: ");
             String valorAtualizado = teclado.nextLine();
 
-            //Atualizando o campo selecionado
+            // Atualizando o campo selecionado
             switch (escolha) {
                 case 1:
                     grupoBytes = Conversor.intoBytes(valorAtualizado, 4);
@@ -252,11 +246,11 @@ public class DataBase implements Conversor {
                     break;
             }
 
-                file.seek(pos);
-                file.write(registro);
+            file.seek(pos);
+            file.write(registro);
 
-                System.out.println("Registro atualizado!");
-            } catch (IOException e) {
+            System.out.println("Registro atualizado!");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -274,7 +268,7 @@ public class DataBase implements Conversor {
 
             // Lê o arquivo em blocos de 76 bytes
             while (file.read(dbLine) != -1) {
-                
+
                 // Extrai o campo 'removido' (primeiro byte)
                 byte removidoBytes = dbLine[0];
                 String removido = String.valueOf((char) removidoBytes);
@@ -299,7 +293,8 @@ public class DataBase implements Conversor {
                 byte[] nomeOrigemBytes = Arrays.copyOfRange(dbLine, 17, 37); // 20 bytes
                 byte[] nomeDestinoBytes = Arrays.copyOfRange(dbLine, 41, 61); // 20 bytes
 
-                // Converte os campos para strings e substitui '*' por espaços para uma visualização mais limpa
+                // Converte os campos para strings e substitui '*' por espaços para uma
+                // visualização mais limpa
                 String grupo = new String(grupoBytes, StandardCharsets.UTF_8).replace("*", " ");
                 String popularidade = new String(popularidadeBytes, StandardCharsets.UTF_8).replace("*", " ");
                 String peso = new String(pesoBytes, StandardCharsets.UTF_8).replace("*", " ");
@@ -311,8 +306,8 @@ public class DataBase implements Conversor {
                 tecnologias.add(nomeDestino.trim());
 
                 // Cria um par único, independentemente da ordem (ordem alfabética)
-                String parTecnologias = (nomeOrigem.compareTo(nomeDestino) < 0) 
-                        ? nomeOrigem.trim() + " - " + nomeDestino.trim() 
+                String parTecnologias = (nomeOrigem.compareTo(nomeDestino) < 0)
+                        ? nomeOrigem.trim() + " - " + nomeDestino.trim()
                         : nomeDestino.trim() + " - " + nomeOrigem.trim();
 
                 // Adiciona o par ao Set de pares únicos
@@ -337,7 +332,8 @@ public class DataBase implements Conversor {
             }
         }
 
-        // Chama o método para contar e exibir as tecnologias diferentes e os pares de tecnologias
+        // Chama o método para contar e exibir as tecnologias diferentes e os pares de
+        // tecnologias
         contarTecnologias(tecnologias);
         contarParesTecnologias(paresTecnologias);
     }
@@ -358,7 +354,7 @@ public class DataBase implements Conversor {
             }
         } else {
             System.out.println("Operação concluída.");
-        }     
+        }
     }
 
     // Método para contar e exibir os pares de tecnologias únicos
