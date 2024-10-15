@@ -1,5 +1,6 @@
 package Domain.Models;
 
+import java.util.Scanner;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -147,6 +148,7 @@ public class DataBase {
     public void selectDataBase(String filePath) throws IOException {
         boolean headerPrinted = false; // Variável para controlar a impressão do cabeçalho
         Set<String> tecnologias = new HashSet<>(); // Conjunto para armazenar as tecnologias únicas
+        Set<String> paresTecnologias = new HashSet<>(); // Conjunto para armazenar os pares de tecnologias únicas
 
         final int RECORD_SIZE = 76; // Tamanho fixo de cada registro
 
@@ -192,6 +194,14 @@ public class DataBase {
                 tecnologias.add(nomeOrigem.trim());
                 tecnologias.add(nomeDestino.trim());
 
+                // Cria um par único, independentemente da ordem (ordem alfabética)
+                String parTecnologias = (nomeOrigem.compareTo(nomeDestino) < 0) 
+                        ? nomeOrigem.trim() + " - " + nomeDestino.trim() 
+                        : nomeDestino.trim() + " - " + nomeOrigem.trim();
+
+                // Adiciona o par ao Set de pares únicos
+                paresTecnologias.add(parTecnologias);
+
                 // Imprime o cabeçalho apenas se ainda não foi impresso
                 if (!headerPrinted) {
                     System.out.println(String.format("\n%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s",
@@ -211,16 +221,46 @@ public class DataBase {
             }
         }
 
-        // Chama o método para contar e exibir as tecnologias diferentes
+        // Chama o método para contar e exibir as tecnologias diferentes e os pares de tecnologias
         contarTecnologias(tecnologias);
+        contarParesTecnologias(paresTecnologias);
     }
 
     // Método para contar e exibir o número de tecnologias diferentes
     public static void contarTecnologias(Set<String> tecnologias) {
+        @SuppressWarnings("resource")
+        Scanner input = new Scanner(System.in);
         System.out.println("\nNúmero total de tecnologias diferentes: " + tecnologias.size());
-        System.out.println("Lista de Tecnologias Únicas:");
-        for (String tecnologia : tecnologias) {
-            System.out.println("- " + tecnologia);
+
+        System.out.println("\nDeseja exibir a lista de tecnologias únicas? (S/N)");
+        String resposta = input.nextLine().toUpperCase();
+
+        if (resposta.equals("S")) {
+            System.out.println("Lista de Tecnologias Únicas:");
+            for (String tecnologia : tecnologias) {
+                System.out.println("- " + tecnologia);
+            }
+        } else {
+            System.out.println("Operação concluída.");
+        }     
+    }
+
+    // Método para contar e exibir os pares de tecnologias únicos
+    public static void contarParesTecnologias(Set<String> paresTecnologias) {
+        @SuppressWarnings("resource")
+        Scanner input = new Scanner(System.in);
+        System.out.println("\nNúmero total de pares de tecnologias únicos: " + paresTecnologias.size());
+
+        System.out.println("\nDeseja exibir a lista de pares de tecnologias únicas? (S/N)");
+        String resposta = input.nextLine().toUpperCase();
+
+        if (resposta.equals("S")) {
+            System.out.println("Lista de Pares de Tecnologias Únicos:");
+            for (String par : paresTecnologias) {
+                System.out.println("- " + par);
+            }
+        } else {
+            System.out.println("Operação concluída.");
         }
     }
 }

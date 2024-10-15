@@ -37,7 +37,7 @@ public class Main implements CSV {
                     try {
                         dataBase.selectDataBase("dataBase.txt");
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        System.out.println("Erro ao ler o arquivo: " + e.getMessage());
                     }
                     continue;
                 case 3:
