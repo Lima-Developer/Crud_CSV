@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import Domain.Interfaces.Conversor;
+
 public class DataBase {
     private byte[] dbLine;
     private boolean headerPrinted; // Variável para controlar a impressão do cabeçalho
@@ -104,9 +106,56 @@ public class DataBase {
         System.out.println(resultado);
     }
 
-    public void deleteRegister(int line) {
+    public void deleteRegister(int register) {
+        try (RandomAccessFile raf = new RandomAccessFile("dataBase.txt", "rw")) {
+            String line;
+            long pointer = 0;
+            if (register == 0)
+                throw new RuntimeException("Não é possível alterar o cabeçalho");
+            int count = 1;
+
+            while ((line = raf.readLine()) != null) {
+                byte[] bLine = line.getBytes(StandardCharsets.UTF_8);
+
+                if (register == count) {
+                    bLine[0] = '1';
+                    raf.seek(pointer);
+                    raf.write(bLine);
+
+                    System.out.println("\nRegistro " + register + " marcado como removido!");
+                    break;
+                } else {
+                    pointer = raf.getFilePointer();
+                    count++;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void undeleteRegister(int line) {
+    public void undeleteRegister(int register) {
+        try (RandomAccessFile raf = new RandomAccessFile("dataBase.txt", "rw")) {
+            String line;
+            long pointer = 0;
+            int count = 1;
+
+            while ((line = raf.readLine()) != null) {
+                byte[] bLine = line.getBytes(StandardCharsets.UTF_8);
+
+                if (register == count) {
+                    bLine[0] = '0';
+                    raf.seek(pointer);
+                    raf.write(bLine);
+                    System.out.println("\nRegistro " + register + " marcado como removido!");
+                    break;
+                } else {
+                    pointer = raf.getFilePointer(); // Atualiza a posição do ponteiro antes da próxima leitura
+                    count++;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

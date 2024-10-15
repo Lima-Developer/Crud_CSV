@@ -43,17 +43,28 @@ public class Main implements CSV {
                     continue;
                 case 5:
                     // Delete Register
-                    System.out.print("Informe a linha do registro que quer deletar: ");
+                    int line;
+                    try {
+                        System.out.println("Informe a linha do registro que quer deletar: ");
 
-                    int line = scanner.nextInt();
-                    dataBase.deleteRegister(line);
+                        line = scanner.nextInt();
+                        dataBase.deleteRegister(line);
+                    } catch (Exception e) {
+                        System.out.println("Ocorreu um erro, voltando para o menu");
+                        main(args);
+                    }
                     continue;
                 case 6:
                     // Undelete Register
-                    System.out.print("Informe a linha do registro que quer recuperar: ");
+                    try {
+                        System.out.print("Informe a linha do registro que quer recuperar: ");
 
-                    line = scanner.nextInt();
-                    dataBase.undeleteRegister(line);
+                        line = scanner.nextInt();
+                        dataBase.undeleteRegister(line);
+                    } catch (Exception e) {
+                        System.out.print("Ocorreu um erro, voltando para o menu");
+                        main(args);
+                    }
                     continue;
                 case 7:
                     System.out.println("Saindo do programa");
