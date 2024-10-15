@@ -148,9 +148,9 @@ public class DataBase implements Conversor {
             byte[] grupoBytes, popularidadeBytes, pesoBytes, nomeOrigemBytes, nomeDestinoBytes;
 
             // Posição do registro no arquivo
-            long pos = (long) rrn * tamRegistro;
+            long offset = (long) rrn * tamRegistro;
 
-            file.seek(pos);
+            file.seek(offset);
 
             // Ler o registro
             byte[] registro = new byte[tamRegistro];
@@ -246,7 +246,7 @@ public class DataBase implements Conversor {
                     break;
             }
 
-            file.seek(pos);
+            file.seek(offset);
             file.write(registro);
 
             System.out.println("Registro atualizado!");
