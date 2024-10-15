@@ -13,11 +13,13 @@ import java.util.Set;
 
 public class DataBase implements Conversor {
     private byte[] dbLine;
-    private boolean headerPrinted; // Variável para controlar a impressão do cabeçalho
+    private boolean headerPrinted;// Variável para controlar a impressão do cabeçalho
+    private byte[] statusBytes, proxRRNBytes, nroTecnologiasBytes, nroParesTecnologiasBytes;
 
     public DataBase() {
         this.dbLine = new byte[76];
-        this.headerPrinted = false; // Inicializa como falso
+        this.headerPrinted = false;// Inicializa como falso
+        this.statusBytes = Conversor.intoBytes(String.valueOf(0), 1);
     }
 
     public byte[] getDbLine() {
@@ -52,6 +54,8 @@ public class DataBase implements Conversor {
 
     private void writeDataToFile() {
         try (RandomAccessFile file = new RandomAccessFile("dataBase.txt", "rw")) {
+            proxRRNBytes
+
             file.seek(file.length());
             file.write(dbLine);
         } catch (IOException e) {
