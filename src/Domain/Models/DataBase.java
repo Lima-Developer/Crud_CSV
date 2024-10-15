@@ -332,14 +332,13 @@ public class DataBase implements Conversor {
             }
         }
 
-        // Chama o método para contar e exibir as tecnologias diferentes e os pares de
-        // tecnologias
-        contarTecnologias(tecnologias);
-        contarParesTecnologias(paresTecnologias);
+        // Chama o método para contar e exibir as tecnologias diferentes e os pares de tecnologias
+        contarTecnologiasMenu(tecnologias);
+        contarParesTecnologiasMenu(paresTecnologias);
     }
 
     // Método para contar e exibir o número de tecnologias diferentes
-    public static void contarTecnologias(Set<String> tecnologias) {
+    public static void contarTecnologiasMenu(Set<String> tecnologias) {
         @SuppressWarnings("resource")
         Scanner input = new Scanner(System.in);
         System.out.println("\nNúmero total de tecnologias diferentes: " + tecnologias.size());
@@ -357,8 +356,12 @@ public class DataBase implements Conversor {
         }
     }
 
+    public static int contarTecnologias(Set<String> tecnologias) {
+        return tecnologias.size();
+    }
+
     // Método para contar e exibir os pares de tecnologias únicos
-    public static void contarParesTecnologias(Set<String> paresTecnologias) {
+    public static void contarParesTecnologiasMenu(Set<String> paresTecnologias) {
         @SuppressWarnings("resource")
         Scanner input = new Scanner(System.in);
         System.out.println("\nNúmero total de pares de tecnologias únicos: " + paresTecnologias.size());
@@ -374,5 +377,9 @@ public class DataBase implements Conversor {
         } else {
             System.out.println("Operação concluída.");
         }
+    }
+
+    public static int contarParesTecnologias(Set<String> paresTecnologias) {
+        return paresTecnologias.size();
     }
 }
