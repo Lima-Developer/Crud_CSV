@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 public class Main implements CSV {
     protected static DataBase dataBase = new DataBase();
+    protected static String filePath;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -30,10 +31,11 @@ public class Main implements CSV {
                     // Create Table
                     System.out.print("Informe o nome do arquivo .csv: ");
 
-                    String filePath = scanner.nextLine();
+                    filePath = scanner.nextLine();
                     dataBase = CSV.readCSV(filePath);
                     break;
                 case 2:
+                    // Select Table
                     try {
                         dataBase.selectDataBase("dataBase.txt");
                     } catch (IOException e) {
@@ -45,15 +47,23 @@ public class Main implements CSV {
                     continue;
                 case 4:
                     // Update Register
+                    int rrn;
+                    System.out.print("Insira o número do registro que deseja atualizar: ");
+                    rrn = scanner.nextInt();
+
+                    try {
+                        dataBase.updateRegister(rrn);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     continue;
                 case 5:
                     // Delete Register
-                    int line;
                     try {
                         System.out.println("Informe a linha do registro que quer deletar: ");
 
-                        line = scanner.nextInt();
-                        dataBase.deleteRegister(line);
+                        rrn = scanner.nextInt();
+                        dataBase.deleteRegister(rrn);
                     } catch (Exception e) {
                         System.out.println("Ocorreu um erro, voltando para o menu.");
                         System.out.println("-------------------------------------");
@@ -65,8 +75,8 @@ public class Main implements CSV {
                     try {
                         System.out.print("Informe a linha do registro que quer recuperar: ");
 
-                        line = scanner.nextInt();
-                        dataBase.undeleteRegister(line);
+                        rrn = scanner.nextInt();
+                        dataBase.undeleteRegister(rrn);
                     } catch (Exception e) {
                         System.out.println("Ocorreu um erro, voltando para o menu.");
                         System.out.println("-------------------------------------");
