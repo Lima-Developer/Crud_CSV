@@ -5,6 +5,8 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DataBase {
     private byte[] dbLine;
@@ -144,13 +146,14 @@ public class DataBase {
 
     public void selectDataBase(String filePath) throws IOException {
         boolean headerPrinted = false; // Variável para controlar a impressão do cabeçalho
+        Set<String> tecnologias = new HashSet<>(); // Conjunto para armazenar as tecnologias únicas
 
         final int RECORD_SIZE = 76; // Tamanho fixo de cada registro
 
         // Abre o arquivo para leitura
         try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
             byte[] dbLine = new byte[RECORD_SIZE]; // Buffer para ler cada linha (76 bytes)
-            
+
             // Lê o arquivo em blocos de 76 bytes
             while (file.read(dbLine) != -1) {
                 
@@ -185,6 +188,10 @@ public class DataBase {
                 String nomeOrigem = new String(nomeOrigemBytes, StandardCharsets.UTF_8).replace("*", " ");
                 String nomeDestino = new String(nomeDestinoBytes, StandardCharsets.UTF_8).replace("*", " ");
 
+                // Adiciona as tecnologias de origem e destino ao Set
+                tecnologias.add(nomeOrigem.trim());
+                tecnologias.add(nomeDestino.trim());
+
                 // Imprime o cabeçalho apenas se ainda não foi impresso
                 if (!headerPrinted) {
                     System.out.println(String.format("\n%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s",
@@ -202,6 +209,18 @@ public class DataBase {
                 // Exibe o resultado formatado
                 System.out.println(resultado);
             }
+        }
+
+        // Chama o método para contar e exibir as tecnologias diferentes
+        contarTecnologias(tecnologias);
+    }
+
+    // Método para contar e exibir o número de tecnologias diferentes
+    public static void contarTecnologias(Set<String> tecnologias) {
+        System.out.println("\nNúmero total de tecnologias diferentes: " + tecnologias.size());
+        System.out.println("Lista de Tecnologias Únicas:");
+        for (String tecnologia : tecnologias) {
+            System.out.println("- " + tecnologia);
         }
     }
 }
