@@ -50,7 +50,8 @@ public class Main implements CSV {
                         line = scanner.nextInt();
                         dataBase.deleteRegister(line);
                     } catch (Exception e) {
-                        System.out.println("Ocorreu um erro, voltando para o menu");
+                        System.out.println("Ocorreu um erro, voltando para o menu.");
+                        System.out.println("-------------------------------------");
                         main(args);
                     }
                     continue;
@@ -62,7 +63,8 @@ public class Main implements CSV {
                         line = scanner.nextInt();
                         dataBase.undeleteRegister(line);
                     } catch (Exception e) {
-                        System.out.print("Ocorreu um erro, voltando para o menu");
+                        System.out.println("Ocorreu um erro, voltando para o menu.");
+                        System.out.println("-------------------------------------");
                         main(args);
                     }
                     continue;
