@@ -17,9 +17,13 @@ public class DataBaseLine implements Conversor {
         this.grupoBytes = Conversor.intoBytes(csvLine[1], 4);
         this.popularidadeBytes = Conversor.intoBytes(csvLine[2], 4);
         this.pesoBytes = Conversor.intoBytes(csvLine[4], 4);
-        this.tamanhoTecnologiaOrigemBytes = Conversor.intoBytes(csvLine[0].length(), 4);
+
+
+        this.tamanhoTecnologiaOrigemBytes = Conversor.intoBytes(String.valueOf(csvLine[0].length()), 4);
+        this.tamanhoTecnologiaDestinoBytes = Conversor.intoBytes(String.valueOf(csvLine[3].length()), 4);
+
+
         this.nomeTecnologiaOrigemBytes = Conversor.intoBytes(csvLine[0], csvLine[0].length());
-        this.tamanhoTecnologiaDestinoBytes = Conversor.intoBytes(csvLine[3].length(), 4);
         this.nomeTecnologiaDestinoBytes = Conversor.intoBytes(csvLine[3], csvLine[3].length());
     }
 
