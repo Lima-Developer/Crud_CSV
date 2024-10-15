@@ -141,4 +141,67 @@ public class DataBase {
             throw new RuntimeException(e);
         }
     }
+
+    public void selectDataBase(String filePath) throws IOException {
+        boolean headerPrinted = false; // Variável para controlar a impressão do cabeçalho
+
+        final int RECORD_SIZE = 76; // Tamanho fixo de cada registro
+
+        // Abre o arquivo para leitura
+        try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
+            byte[] dbLine = new byte[RECORD_SIZE]; // Buffer para ler cada linha (76 bytes)
+            
+            // Lê o arquivo em blocos de 76 bytes
+            while (file.read(dbLine) != -1) {
+                
+                // Extrai o campo 'removido' (primeiro byte)
+                byte removidoBytes = dbLine[0];
+                String removido = String.valueOf((char) removidoBytes);
+
+                // Pula registros marcados como logicamente removidos ('1')
+                if (removido.equals("1")) {
+                    continue;
+                }
+
+                // Extrai os tamanhos de origem e destino
+                byte[] tamanhoOrigemBytes = Arrays.copyOfRange(dbLine, 13, 17);
+                byte[] tamanhoDestinoBytes = Arrays.copyOfRange(dbLine, 37, 41);
+
+                // Converte os tamanhos para inteiros
+                int tamanhoOrigem = ByteBuffer.wrap(tamanhoOrigemBytes).getInt();
+                int tamanhoDestino = ByteBuffer.wrap(tamanhoDestinoBytes).getInt();
+
+                // Extrai os demais campos
+                byte[] grupoBytes = Arrays.copyOfRange(dbLine, 1, 5);
+                byte[] popularidadeBytes = Arrays.copyOfRange(dbLine, 5, 9);
+                byte[] pesoBytes = Arrays.copyOfRange(dbLine, 9, 13);
+                byte[] nomeOrigemBytes = Arrays.copyOfRange(dbLine, 17, 37); // 20 bytes
+                byte[] nomeDestinoBytes = Arrays.copyOfRange(dbLine, 41, 61); // 20 bytes
+
+                // Converte os campos para strings e substitui '*' por espaços para uma visualização mais limpa
+                String grupo = new String(grupoBytes, StandardCharsets.UTF_8).replace("*", " ");
+                String popularidade = new String(popularidadeBytes, StandardCharsets.UTF_8).replace("*", " ");
+                String peso = new String(pesoBytes, StandardCharsets.UTF_8).replace("*", " ");
+                String nomeOrigem = new String(nomeOrigemBytes, StandardCharsets.UTF_8).replace("*", " ");
+                String nomeDestino = new String(nomeDestinoBytes, StandardCharsets.UTF_8).replace("*", " ");
+
+                // Imprime o cabeçalho apenas se ainda não foi impresso
+                if (!headerPrinted) {
+                    System.out.println(String.format("\n%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s",
+                            "STATUS", "GRUPO", "POPULARIDADE", "PESO", "TAMANHO ORIGEM", "NOME ORIGEM",
+                            "TAMANHO DESTINO", "NOME DESTINO"));
+                    System.out.println(
+                            "----------------------------------------------------------------------------------------------------------------");
+                    headerPrinted = true; // Marca como impresso
+                }
+
+                // Formata a saída de forma mais amigável
+                String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16d | %-12s | %-16d | %-12s",
+                        removido, grupo, popularidade, peso, tamanhoOrigem, nomeOrigem, tamanhoDestino, nomeDestino);
+
+                // Exibe o resultado formatado
+                System.out.println(resultado);
+            }
+        }
+    }
 }

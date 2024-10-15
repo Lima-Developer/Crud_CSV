@@ -1,6 +1,7 @@
 import Domain.Interfaces.CSV;
 import Domain.Models.DataBase;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main implements CSV {
@@ -33,7 +34,11 @@ public class Main implements CSV {
                     dataBase = CSV.readCSV(filePath);
                     break;
                 case 2:
-                    // Select Table
+                    try {
+                        dataBase.selectDataBase("dataBase.txt");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     continue;
                 case 3:
                     // Insert Register
