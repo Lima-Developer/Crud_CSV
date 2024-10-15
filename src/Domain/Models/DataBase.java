@@ -13,13 +13,11 @@ import java.util.Set;
 
 public class DataBase implements Conversor {
     private byte[] dbLine;
-    private boolean headerPrinted;// Variável para controlar a impressão do cabeçalho
-    private byte[] statusBytes, proxRRNBytes, nroTecnologiasBytes, nroParesTecnologiasBytes;
+    private boolean headerPrinted; // Variável para controlar a impressão do cabeçalho
 
     public DataBase() {
         this.dbLine = new byte[76];
-        this.headerPrinted = false;// Inicializa como falso
-        this.statusBytes = Conversor.intoBytes(String.valueOf(0), 1);
+        this.headerPrinted = false; // Inicializa como falso
     }
 
     public byte[] getDbLine() {
@@ -54,7 +52,6 @@ public class DataBase implements Conversor {
 
     private void writeDataToFile() {
         try (RandomAccessFile file = new RandomAccessFile("dataBase.txt", "rw")) {
-            proxRRNBytes = Conversor.intoBytes(String.valueOf(encontrarPrimeiroRegistroAtivo("dataBase.txt")), 4);
             file.seek(file.length());
             file.write(dbLine);
         } catch (IOException e) {
@@ -335,14 +332,13 @@ public class DataBase implements Conversor {
             }
         }
 
-        // Chama o método para contar e exibir as tecnologias diferentes e os pares de
-        // tecnologias
-        contarTecnologias(tecnologias);
-        contarParesTecnologias(paresTecnologias);
+        // Chama o método para contar e exibir as tecnologias diferentes e os pares de tecnologias
+        contarTecnologiasMenu(tecnologias);
+        contarParesTecnologiasMenu(paresTecnologias);
     }
 
     // Método para contar e exibir o número de tecnologias diferentes
-    public static void contarTecnologias(Set<String> tecnologias) {
+    public static void contarTecnologiasMenu(Set<String> tecnologias) {
         @SuppressWarnings("resource")
         Scanner input = new Scanner(System.in);
         System.out.println("\nNúmero total de tecnologias diferentes: " + tecnologias.size());
@@ -360,8 +356,12 @@ public class DataBase implements Conversor {
         }
     }
 
+    public static int contarTecnologias(Set<String> tecnologias) {
+        return tecnologias.size();
+    }
+
     // Método para contar e exibir os pares de tecnologias únicos
-    public static void contarParesTecnologias(Set<String> paresTecnologias) {
+    public static void contarParesTecnologiasMenu(Set<String> paresTecnologias) {
         @SuppressWarnings("resource")
         Scanner input = new Scanner(System.in);
         System.out.println("\nNúmero total de pares de tecnologias únicos: " + paresTecnologias.size());
@@ -403,5 +403,9 @@ public class DataBase implements Conversor {
         }
 
         return -1; // Retorna -1 se nenhum registro ativo for encontrado
+    }
+
+    public static int contarParesTecnologias(Set<String> paresTecnologias) {
+        return paresTecnologias.size();
     }
 }
