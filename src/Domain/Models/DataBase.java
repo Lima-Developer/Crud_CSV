@@ -54,8 +54,7 @@ public class DataBase implements Conversor {
 
     private void writeDataToFile() {
         try (RandomAccessFile file = new RandomAccessFile("dataBase.txt", "rw")) {
-            proxRRNBytes
-
+            proxRRNBytes = Conversor.intoBytes(String.valueOf(encontrarPrimeiroRegistroAtivo("dataBase.txt")), 4);
             file.seek(file.length());
             file.write(dbLine);
         } catch (IOException e) {
@@ -378,5 +377,31 @@ public class DataBase implements Conversor {
         } else {
             System.out.println("Operação concluída.");
         }
+    }
+
+    public int encontrarPrimeiroRegistroAtivo(String filePath) throws IOException {
+        final int RECORD_SIZE = 76; // Tamanho fixo de cada registro
+        int index = 0; // Índice do registro
+
+        // Abre o arquivo para leitura
+        try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
+            byte[] dbLine = new byte[RECORD_SIZE]; // Buffer para ler cada linha (76 bytes)
+
+            // Lê o arquivo em blocos de 76 bytes
+            while (file.read(dbLine) != -1) {
+                // Extrai o campo 'removido' (primeiro byte)
+                byte removidoBytes = dbLine[0];
+                String removido = String.valueOf((char) removidoBytes);
+
+                // Verifica se o registro não foi logicamente removido ('0')
+                if (removido.equals("0")) {
+                    return index; // Retorna o índice do primeiro registro ativo
+                }
+
+                index++; // Incrementa o índice a cada registro lido
+            }
+        }
+
+        return -1; // Retorna -1 se nenhum registro ativo for encontrado
     }
 }
