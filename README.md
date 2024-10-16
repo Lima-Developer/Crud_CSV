@@ -61,7 +61,7 @@ O arquivo de dados gerado contém registros com os seguintes campos:
 
 
 
- for (String tecnologia : tecnologias){
+               for (String tecnologia : tecnologias){
                     if (!removido.equalsIgnoreCase("0")){
                         tecnologias.remove(tecnologia);
                     }
