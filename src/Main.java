@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Main implements CSV {
     protected static DataBase dataBase = new DataBase();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         int opcao = 0;
         while (opcao != 7) {
@@ -41,7 +41,7 @@ public class Main implements CSV {
                     }
                     continue;
                 case 3:
-                    // Insert Register
+                    dataBase.insertRegister();
                     continue;
                 case 4:
                     // Update Register

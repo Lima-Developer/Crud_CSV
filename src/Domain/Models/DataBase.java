@@ -1,6 +1,7 @@
 package Domain.Models;
 
 import java.util.Scanner;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -8,6 +9,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.nio.ByteBuffer;
+
+
+import Domain.Interfaces.Conversor;
 
 public class DataBase {
     private byte[] dbLine;
@@ -213,7 +218,7 @@ public class DataBase {
                 }
 
                 // Formata a saída de forma mais amigável
-                String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16d | %-12s | %-16d | %-12s",
+                String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s",
                         removido, grupo, popularidade, peso, tamanhoOrigem, nomeOrigem, tamanhoDestino, nomeDestino);
 
                 // Exibe o resultado formatado
@@ -263,4 +268,69 @@ public class DataBase {
             System.out.println("Operação concluída.");
         }
     }
-}
+
+    // Método para inserir um registro no DataBase
+    public  void insertRegister() throws IOException{
+        @SuppressWarnings("resource")
+        Scanner scanner = new Scanner(System.in);
+        String grupoStr, popularidadeStr, pesoStr, nomeTecnologiaOrigemStr, nomeTecnologiaDestinoStr;
+
+        System.out.println("Digite o grupo da tecnologia");
+        grupoStr = scanner.nextLine();
+        System.out.println("Digite a popularidade da tecnologia");
+        popularidadeStr = scanner.nextLine();
+        System.out.println("Digite o peso da tecnologia");
+        pesoStr = scanner.nextLine();
+        System.out.println("Digite o nome da tecnologia de origem");
+        nomeTecnologiaOrigemStr = scanner.nextLine();
+        System.out.println("Digite o nome da tecnologia de destino");
+        nomeTecnologiaDestinoStr = scanner.nextLine();
+
+        String[] dados = {nomeTecnologiaOrigemStr,grupoStr,popularidadeStr,nomeTecnologiaDestinoStr,pesoStr};
+        DataBaseLine linha = new DataBaseLine(dados);
+        createTable(linha);
+        System.out.println("Linha: "+linha);
+
+//        grupoBytes = Conversor.intoBytes(grupoStr, 4);
+//        popularidadeBytes = Conversor.intoBytes(popularidadeStr, 4);
+//        pesoBytes = Conversor.intoBytes(pesoStr, 4);
+//        nomeTecnologiaOrigemBytes = Conversor.intoBytes(nomeTecnologiaOrigemStr, tamanhoTecnologiaOrigem);
+//        tamanhoTecnologiaOrigemBytes = Conversor.intoBytes(String.valueOf(tamanhoTecnologiaOrigem), 4);
+//        nomeTecnologiaDestinoBytes = Conversor.intoBytes(nomeTecnologiaDestinoStr, tamanhoTecnologiaDestino);
+//        tamanhoTecnologiaDestinoBytes = Conversor.intoBytes(String.valueOf(tamanhoTecnologiaDestino), 4);
+//
+//        // Calcula o tamanho total necessário para o ByteBuffer
+//        int totalLength = 1 + grupoBytes.length + pesoBytes.length + nomeTecnologiaDestinoBytes.length + tamanhoTecnologiaDestino + nomeTecnologiaOrigemBytes.length + tamanhoTecnologiaOrigem;
+//
+//        // Cria um ByteBuffer com o tamanho total
+//        ByteBuffer buffer = ByteBuffer.allocate(totalLength);
+//
+//        // Adiciona os arrays de bytes ao buffer
+//        buffer.put(grupoBytes);
+//        buffer.put(pesoBytes);
+//        buffer.put(popularidadeBytes);
+//        buffer.put(nomeTecnologiaOrigemBytes);
+//        buffer.put(tamanhoTecnologiaOrigemBytes);
+//        buffer.put(tamanhoTecnologiaDestinoBytes);
+//        buffer.put(nomeTecnologiaDestinoBytes);
+//
+//        byte[] dados = buffer.array();
+//
+//        try {
+//            RandomAccessFile raf = new RandomAccessFile("dataBase.txt", "rw");
+//            raf.seek(raf.length());
+//            raf.write(dados);
+//
+//
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
+    }
+    }
+    
+
