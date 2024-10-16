@@ -5,9 +5,6 @@ import java.util.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class DataBase implements Conversor {
     private byte[] dbLine;
@@ -357,9 +354,24 @@ public class DataBase implements Conversor {
                 String tamanhoDestino = new String(tamanhoDestinoBytes, StandardCharsets.UTF_8).replace("*", " ");
                 String nomeDestino = new String(nomeDestinoBytes, StandardCharsets.UTF_8).replace("*", " ");
 
-                // Adiciona as tecnologias de origem e destino ao Set
-                tecnologias.add(nomeOrigem.trim());
-                tecnologias.add(nomeDestino.trim());
+                for (String tecnologia : tecnologias){
+                    if (!removido.equalsIgnoreCase("0")){
+                        tecnologias.remove(tecnologia);
+                    }
+                }
+
+                // Se o status do registro for igual a 0 ele contabiliza o registro na contagem de tecnologias
+                if (removido.equalsIgnoreCase("0")) {
+                    // Adiciona as tecnologias de origem e destino ao Set
+                    tecnologias.add(nomeOrigem.trim());
+                    tecnologias.add(nomeDestino.trim());
+
+                    // Cria um par único, independentemente da ordem (ordem alfabética)
+                    String parTecnologias = (nomeOrigem.compareTo(nomeDestino) < 0) ? nomeOrigem.trim() + " - " + nomeDestino.trim() : nomeDestino.trim() + " - " + nomeOrigem.trim();
+
+                    // Adiciona o par ao Set de pares únicos
+                    paresTecnologias.add(parTecnologias);
+                }
 
                 // Cria um par único, independentemente da ordem (ordem alfabética)
                 String parTecnologias = (nomeOrigem.compareTo(nomeDestino) < 0) ? nomeOrigem.trim() + " - " + nomeDestino.trim() : nomeDestino.trim() + " - " + nomeOrigem.trim();
