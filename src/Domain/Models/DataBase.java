@@ -1,7 +1,6 @@
 package Domain.Models;
 
 import Domain.Interfaces.Conversor;
-import java.io.FileNotFoundException;
 import java.util.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
