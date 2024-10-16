@@ -305,6 +305,7 @@ public class DataBase implements Conversor {
 
         // Abre o arquivo para leitura
         try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
+            file.seek(13);
             byte[] dbLine = new byte[RECORD_SIZE]; // Buffer para ler cada linha (76 bytes)
 
             // Lê o arquivo em blocos de 76 bytes
