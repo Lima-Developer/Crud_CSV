@@ -5,7 +5,6 @@ import Domain.Interfaces.Conversor;
 import java.util.Scanner;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -157,12 +156,13 @@ public class DataBase implements Conversor {
             file.read(registro);
 
             // Mostrar o registro atual
-            System.out.println("Registro Atual:");
+            System.out.print("\nRegistro Atual:");
             System.out.println(new String(registro, StandardCharsets.UTF_8));
 
             // Usuário digita campo ele deseja atualizar
+            @SuppressWarnings("resource")
             Scanner teclado = new Scanner(System.in);
-            System.out.println("Qual campo deseja atualizar?");
+            System.out.println("\nQual campo deseja atualizar?");
             System.out.print("""
                     1. Grupo
                     2. Popularidade
