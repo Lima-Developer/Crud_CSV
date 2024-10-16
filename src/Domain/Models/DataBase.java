@@ -5,8 +5,10 @@ import Domain.Interfaces.Conversor;
 import java.util.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DataBase implements Conversor {
     private byte[] dbLine;
@@ -145,7 +147,7 @@ public class DataBase implements Conversor {
 
     public void deleteRegister(int register) {
         try (RandomAccessFile raf = new RandomAccessFile("dataBase.txt", "rw")) {
-
+            raf.seek(13);
             long pointer = (register) * 76;
             raf.seek(pointer);
 
@@ -164,7 +166,7 @@ public class DataBase implements Conversor {
 
     public void undeleteRegister(int register) {
         try (RandomAccessFile raf = new RandomAccessFile("dataBase.txt", "rw")) {
-
+            raf.seek(13);
             long pointer = (register) * 76;
             raf.seek(pointer);
 
@@ -197,12 +199,13 @@ public class DataBase implements Conversor {
             file.read(registro);
 
             // Mostrar o registro atual
-            System.out.println("Registro Atual:");
+            System.out.print("\nRegistro Atual:");
             System.out.println(new String(registro, StandardCharsets.UTF_8));
 
             // Usuário digita campo ele deseja atualizar
+            @SuppressWarnings("resource")
             Scanner teclado = new Scanner(System.in);
-            System.out.println("Qual campo deseja atualizar?");
+            System.out.println("\nQual campo deseja atualizar?");
             System.out.print("""
                     1. Grupo
                     2. Popularidade
@@ -316,27 +319,22 @@ public class DataBase implements Conversor {
                     continue;
                 }
 
-                // Extrai os tamanhos de origem e destino
-                byte[] tamanhoOrigemBytes = Arrays.copyOfRange(dbLine, 13, 17);
-                byte[] tamanhoDestinoBytes = Arrays.copyOfRange(dbLine, 37, 41);
-
-                // Converte os tamanhos para inteiros
-                int tamanhoOrigem = ByteBuffer.wrap(tamanhoOrigemBytes).getInt();
-                int tamanhoDestino = ByteBuffer.wrap(tamanhoDestinoBytes).getInt();
-
                 // Extrai os demais campos
                 byte[] grupoBytes = Arrays.copyOfRange(dbLine, 1, 5);
                 byte[] popularidadeBytes = Arrays.copyOfRange(dbLine, 5, 9);
                 byte[] pesoBytes = Arrays.copyOfRange(dbLine, 9, 13);
+                byte[] tamanhoOrigemBytes = Arrays.copyOfRange(dbLine, 13, 17);
                 byte[] nomeOrigemBytes = Arrays.copyOfRange(dbLine, 17, 37); // 20 bytes
+                byte[] tamanhoDestinoBytes = Arrays.copyOfRange(dbLine, 37, 41);
                 byte[] nomeDestinoBytes = Arrays.copyOfRange(dbLine, 41, 61); // 20 bytes
 
-                // Converte os campos para strings e substitui '*' por espaços para uma
-                // visualização mais limpa
+                // Converte os campos para strings e substitui '*' por espaços para uma visualização mais limpa
                 String grupo = new String(grupoBytes, StandardCharsets.UTF_8).replace("*", " ");
                 String popularidade = new String(popularidadeBytes, StandardCharsets.UTF_8).replace("*", " ");
                 String peso = new String(pesoBytes, StandardCharsets.UTF_8).replace("*", " ");
+                String tamanhoOrigem = new String(tamanhoOrigemBytes, StandardCharsets.UTF_8).replace("*", " ");
                 String nomeOrigem = new String(nomeOrigemBytes, StandardCharsets.UTF_8).replace("*", " ");
+                String tamanhoDestino = new String(tamanhoDestinoBytes, StandardCharsets.UTF_8).replace("*", " ");
                 String nomeDestino = new String(nomeDestinoBytes, StandardCharsets.UTF_8).replace("*", " ");
 
                 // Adiciona as tecnologias de origem e destino ao Set
@@ -357,7 +355,8 @@ public class DataBase implements Conversor {
                 }
 
                 // Formata a saída de forma mais amigável
-                String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16d | %-12s | %-16d | %-12s", removido, grupo, popularidade, peso, tamanhoOrigem, nomeOrigem, tamanhoDestino, nomeDestino);
+                String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s",
+                        removido, grupo, popularidade, peso, tamanhoOrigem, nomeOrigem, tamanhoDestino, nomeDestino);
 
                 // Exibe o resultado formatado
                 System.out.println(resultado);
