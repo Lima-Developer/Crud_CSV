@@ -186,11 +186,12 @@ public class DataBase implements Conversor {
     public void updateRegister(int rrn) throws IOException {
         try (RandomAccessFile file = new RandomAccessFile("dataBase.txt", "rw")) {
 
+            long offset = 13;
             int tamRegistro = 76;
-            byte[] grupoBytes, popularidadeBytes, pesoBytes, nomeOrigemBytes, nomeDestinoBytes;
+            byte[] grupoBytes, popularidadeBytes, pesoBytes, nomeOrigemBytes, nomeDestinoBytes, tamanhoOrigemBytes, tamanhoDestinoBytes;
 
             // Posição do registro no arquivo
-            long offset = (long) rrn * tamRegistro;
+            offset += (long) rrn * tamRegistro;
 
             file.seek(offset);
 
@@ -199,7 +200,7 @@ public class DataBase implements Conversor {
             file.read(registro);
 
             // Mostrar o registro atual
-            System.out.print("\nRegistro Atual:");
+            System.out.print("\nRegistro Atual: ");
             System.out.println(new String(registro, StandardCharsets.UTF_8));
 
             // Usuário digita campo ele deseja atualizar
@@ -217,16 +218,16 @@ public class DataBase implements Conversor {
             int escolha = teclado.nextInt();
             teclado.nextLine();
 
-            // Usuário digitar o valor novo
-            System.out.print("Insira o novo valor: ");
-            String valorAtualizado = teclado.nextLine();
-
             // Atualizando o campo selecionado
             switch (escolha) {
                 case 1:
+                    // Usuário digitar o valor novo
+                    System.out.print("Insira o novo valor: ");
+                    String valorAtualizado = teclado.nextLine();
+
                     grupoBytes = Conversor.intoBytes(valorAtualizado, 4);
 
-                    if (grupoBytes.length < 4) { // Verifica se grupoBytes tem 4 bytes
+                    if (grupoBytes.length < 4) {
                         byte[] paddedGrupoBytes = new byte[4];
                         System.arraycopy(grupoBytes, 0, paddedGrupoBytes, 0, grupoBytes.length);
                         Arrays.fill(paddedGrupoBytes, grupoBytes.length, 4, (byte) '*');
@@ -237,6 +238,9 @@ public class DataBase implements Conversor {
                     break;
 
                 case 2:
+                    System.out.print("Insira o novo valor: ");
+                    valorAtualizado = teclado.nextLine();
+
                     popularidadeBytes = Conversor.intoBytes(valorAtualizado, 4);
 
                     if (popularidadeBytes.length < 4) {
@@ -250,6 +254,9 @@ public class DataBase implements Conversor {
                     break;
 
                 case 3:
+                    System.out.print("Insira o novo valor: ");
+                    valorAtualizado = teclado.nextLine();
+
                     pesoBytes = Conversor.intoBytes(valorAtualizado, 4);
 
                     if (pesoBytes.length < 4) {
@@ -263,30 +270,43 @@ public class DataBase implements Conversor {
                     break;
 
                 case 4:
+                    System.out.print("Insira o novo valor: ");
+                    valorAtualizado = teclado.nextLine();
+
                     nomeOrigemBytes = Conversor.intoBytes(valorAtualizado, 20);
+                    byte[] paddedNomeOrigemBytes = new byte[20];
+                    System.arraycopy(nomeOrigemBytes, 0, paddedNomeOrigemBytes, 0, nomeOrigemBytes.length);
+                    Arrays.fill(paddedNomeOrigemBytes, nomeOrigemBytes.length, 20, (byte) '*');
+                    System.arraycopy(paddedNomeOrigemBytes, 0, registro, 17, 20); // Atualiza o campo Nome Origem
 
-                    if (nomeOrigemBytes.length < 20) {
-                        byte[] paddedNomeOrigemBytes = new byte[20];
-                        System.arraycopy(nomeOrigemBytes, 0, paddedNomeOrigemBytes, 0, nomeOrigemBytes.length);
-                        Arrays.fill(paddedNomeOrigemBytes, nomeOrigemBytes.length, 20, (byte) '*');
-                        nomeOrigemBytes = paddedNomeOrigemBytes;
-                    }
+                    tamanhoOrigemBytes = Conversor.intoBytes(String.valueOf(nomeOrigemBytes.length), 4);
+                    byte[] paddedTamanhoOrigemBytes = new byte[4];
+                    System.arraycopy(tamanhoOrigemBytes, 0, paddedTamanhoOrigemBytes, 0, tamanhoOrigemBytes.length);
+                    Arrays.fill(paddedTamanhoOrigemBytes, tamanhoOrigemBytes.length, 4, (byte) '*');
+                    System.arraycopy(paddedTamanhoOrigemBytes, 0, registro, 13, 4); // Atualiza o campo tamanho do Nome Origem
 
-                    System.arraycopy(nomeOrigemBytes, 0, registro, 17, 20); // Atualiza o campo Nome Origem
                     break;
-
                 case 5:
+                    System.out.print("Insira o novo valor: ");
+                    valorAtualizado = teclado.nextLine();
+
                     nomeDestinoBytes = Conversor.intoBytes(valorAtualizado, 20);
+                    byte[] paddedNomeDestinoBytes = new byte[20];
+                    System.arraycopy(nomeDestinoBytes, 0, paddedNomeDestinoBytes, 0, nomeDestinoBytes.length);
+                    Arrays.fill(paddedNomeDestinoBytes, nomeDestinoBytes.length, 20, (byte) '*');
+                    System.arraycopy(paddedNomeDestinoBytes, 0, registro, 41, 20); // Atualiza o campo Nome Destino
 
-                    if (nomeDestinoBytes.length < 20) {
-                        byte[] paddedNomeDestinoBytes = new byte[20];
-                        System.arraycopy(nomeDestinoBytes, 0, paddedNomeDestinoBytes, 0, nomeDestinoBytes.length);
-                        Arrays.fill(paddedNomeDestinoBytes, nomeDestinoBytes.length, 20, (byte) '*');
-                        nomeDestinoBytes = paddedNomeDestinoBytes;
-                    }
+                    tamanhoDestinoBytes = Conversor.intoBytes(String.valueOf(nomeDestinoBytes.length), 4);
+                    byte[] paddedTamanhoDestinoBytes = new byte[4];
+                    System.arraycopy(tamanhoDestinoBytes, 0, paddedTamanhoDestinoBytes, 0, tamanhoDestinoBytes.length);
+                    Arrays.fill(paddedTamanhoDestinoBytes, tamanhoDestinoBytes.length, 4, (byte) '*');
+                    System.arraycopy(paddedTamanhoDestinoBytes, 0, registro, 37, 4); // Atualiza o campo tamanho do Nome Destino
 
-                    System.arraycopy(nomeDestinoBytes, 0, registro, 41, 20); // Atualiza o campo Nome Destino
                     break;
+
+                default:
+                    System.out.println("Escolha inválida.");
+                    return;
             }
 
             file.seek(offset);
