@@ -2,22 +2,26 @@ package Domain.Models;
 
 import Domain.Interfaces.Conversor;
 
-import java.util.Scanner;
+import java.util.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class DataBase implements Conversor {
     private byte[] dbLine;
+    private byte[] headerDB;
     private boolean headerPrinted; // Variável para controlar a impressão do cabeçalho
+    private byte[] status, proxRRN, nroTecnologias, nroParesTecnologias;
+
+    private static Set<String> tecnologias = new HashSet<>(); // Conjunto para armazenar as tecnologias únicas
+    private static Set<String> paresTecnologias = new HashSet<>(); // Conjunto para armazenar os pares de tecnologias únicas
 
     public DataBase() {
+        this.headerDB = new byte[13];
         this.dbLine = new byte[76];
         this.headerPrinted = false; // Inicializa como falso
+        this.status = Conversor.intoBytes(String.valueOf(0), 1);
     }
 
     public byte[] getDbLine() {
@@ -28,7 +32,39 @@ public class DataBase implements Conversor {
         this.dbLine = dbLine;
     }
 
-    public void createTable(DataBaseLine dataBaseLine) {
+    public byte[] getNroParesTecnologias() {
+        return nroParesTecnologias;
+    }
+
+    public void setNroParesTecnologias(byte[] nroParesTecnologias) {
+        this.nroParesTecnologias = nroParesTecnologias;
+    }
+
+    public byte[] getNroTecnologias() {
+        return nroTecnologias;
+    }
+
+    public void setNroTecnologias(byte[] nroTecnologias) {
+        this.nroTecnologias = nroTecnologias;
+    }
+
+    public byte[] getProxRRN() {
+        return proxRRN;
+    }
+
+    public void setProxRRN(byte[] proxRRN) {
+        this.proxRRN = proxRRN;
+    }
+
+    public byte[] getStatus() {
+        return status;
+    }
+
+    public void setStatus(byte[] status) {
+        this.status = status;
+    }
+
+    public void createTable(DataBaseLine dataBaseLine) throws IOException {
         // Limpa o array dbLine preenchendo com '*'
         Arrays.fill(dbLine, (byte) '*');
 
@@ -37,21 +73,29 @@ public class DataBase implements Conversor {
         System.arraycopy(dataBaseLine.getGrupoBytes(), 0, dbLine, 1, dataBaseLine.getGrupoBytes().length);
         System.arraycopy(dataBaseLine.getPopularidadeBytes(), 0, dbLine, 5, dataBaseLine.getPopularidadeBytes().length);
         System.arraycopy(dataBaseLine.getPesoBytes(), 0, dbLine, 9, dataBaseLine.getPesoBytes().length);
-        System.arraycopy(dataBaseLine.getTamanhoTecnologiaOrigemBytes(), 0, dbLine, 13,
-                dataBaseLine.getTamanhoTecnologiaOrigemBytes().length);
-        System.arraycopy(dataBaseLine.getNomeTecnologiaOrigemBytes(), 0, dbLine, 17,
-                dataBaseLine.getNomeTecnologiaOrigemBytes().length);
-        System.arraycopy(dataBaseLine.getTamanhoTecnologiaDestinoBytes(), 0, dbLine, 37,
-                dataBaseLine.getTamanhoTecnologiaDestinoBytes().length);
-        System.arraycopy(dataBaseLine.getNomeTecnologiaDestinoBytes(), 0, dbLine, 41,
-                dataBaseLine.getNomeTecnologiaDestinoBytes().length);
+        System.arraycopy(dataBaseLine.getTamanhoTecnologiaOrigemBytes(), 0, dbLine, 13, dataBaseLine.getTamanhoTecnologiaOrigemBytes().length);
+        System.arraycopy(dataBaseLine.getNomeTecnologiaOrigemBytes(), 0, dbLine, 17, dataBaseLine.getNomeTecnologiaOrigemBytes().length);
+        System.arraycopy(dataBaseLine.getTamanhoTecnologiaDestinoBytes(), 0, dbLine, 37, dataBaseLine.getTamanhoTecnologiaDestinoBytes().length);
+        System.arraycopy(dataBaseLine.getNomeTecnologiaDestinoBytes(), 0, dbLine, 41, dataBaseLine.getNomeTecnologiaDestinoBytes().length);
 
         // Grava os dados no arquivo dataBase.txt
         writeDataToFile();
     }
 
-    private void writeDataToFile() {
+    private void writeDataToFile() throws IOException {
         try (RandomAccessFile file = new RandomAccessFile("dataBase.txt", "rw")) {
+            if (file.length() == 0) {
+                setNroTecnologias(Conversor.intoBytes(String.valueOf(contarTecnologias(tecnologias)), 4));
+                setNroParesTecnologias(Conversor.intoBytes(String.valueOf(contarParesTecnologias(paresTecnologias)), 4));
+                setProxRRN(Conversor.intoBytes(String.valueOf(encontrarPrimeiroRegistroAtivo("dataBase.txt")), 4));
+                Arrays.fill(headerDB, (byte) '*');
+
+                System.arraycopy(status, 0, headerDB, 0, status.length);
+                System.arraycopy(proxRRN, 0, headerDB, 1, proxRRN.length);
+                System.arraycopy(nroTecnologias, 0, headerDB, 5, nroTecnologias.length);
+                System.arraycopy(nroParesTecnologias, 0, headerDB, 9, nroParesTecnologias.length);
+                file.write(headerDB);
+            }
             file.seek(file.length());
             file.write(dbLine);
         } catch (IOException e) {
@@ -87,17 +131,13 @@ public class DataBase implements Conversor {
 
         // Imprime o cabeçalho apenas se ainda não foi impresso
         if (!headerPrinted) {
-            System.out.println(String.format("\n%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s", "STATUS",
-                    "GRUPO", "POPULARIDADE", "PESO", "TAMANHO ORIGEM", "NOME ORIGEM", "TAMANHO DESTINO",
-                    "NOME DESTINO"));
-            System.out.println(
-                    "----------------------------------------------------------------------------------------------------------------");
+            System.out.println(String.format("\n%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s", "STATUS", "GRUPO", "POPULARIDADE", "PESO", "TAMANHO ORIGEM", "NOME ORIGEM", "TAMANHO DESTINO", "NOME DESTINO"));
+            System.out.println("----------------------------------------------------------------------------------------------------------------");
             headerPrinted = true; // Marca como impresso
         }
 
         // Formata a saída de forma mais amigável
-        String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s", removido, grupo,
-                popularidade, peso, tamanhoOrigem, nomeOrigem, tamanhoDestino, nomeDestino);
+        String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s", removido, grupo, popularidade, peso, tamanhoOrigem, nomeOrigem, tamanhoDestino, nomeDestino);
 
         // Exibe o resultado formatado
         System.out.println(resultado);
@@ -257,8 +297,6 @@ public class DataBase implements Conversor {
 
     public void selectDataBase(String filePath) throws IOException {
         boolean headerPrinted = false; // Variável para controlar a impressão do cabeçalho
-        Set<String> tecnologias = new HashSet<>(); // Conjunto para armazenar as tecnologias únicas
-        Set<String> paresTecnologias = new HashSet<>(); // Conjunto para armazenar os pares de tecnologias únicas
 
         final int RECORD_SIZE = 76; // Tamanho fixo de cada registro
 
@@ -306,26 +344,20 @@ public class DataBase implements Conversor {
                 tecnologias.add(nomeDestino.trim());
 
                 // Cria um par único, independentemente da ordem (ordem alfabética)
-                String parTecnologias = (nomeOrigem.compareTo(nomeDestino) < 0)
-                        ? nomeOrigem.trim() + " - " + nomeDestino.trim()
-                        : nomeDestino.trim() + " - " + nomeOrigem.trim();
+                String parTecnologias = (nomeOrigem.compareTo(nomeDestino) < 0) ? nomeOrigem.trim() + " - " + nomeDestino.trim() : nomeDestino.trim() + " - " + nomeOrigem.trim();
 
                 // Adiciona o par ao Set de pares únicos
                 paresTecnologias.add(parTecnologias);
 
                 // Imprime o cabeçalho apenas se ainda não foi impresso
                 if (!headerPrinted) {
-                    System.out.println(String.format("\n%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s",
-                            "STATUS", "GRUPO", "POPULARIDADE", "PESO", "TAMANHO ORIGEM", "NOME ORIGEM",
-                            "TAMANHO DESTINO", "NOME DESTINO"));
-                    System.out.println(
-                            "----------------------------------------------------------------------------------------------------------------");
+                    System.out.println(String.format("\n%-12s | %-6s | %-12s | %-4s | %-16s | %-12s | %-16s | %-12s", "STATUS", "GRUPO", "POPULARIDADE", "PESO", "TAMANHO ORIGEM", "NOME ORIGEM", "TAMANHO DESTINO", "NOME DESTINO"));
+                    System.out.println("----------------------------------------------------------------------------------------------------------------");
                     headerPrinted = true; // Marca como impresso
                 }
 
                 // Formata a saída de forma mais amigável
-                String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16d | %-12s | %-16d | %-12s",
-                        removido, grupo, popularidade, peso, tamanhoOrigem, nomeOrigem, tamanhoDestino, nomeDestino);
+                String resultado = String.format("%-12s | %-6s | %-12s | %-4s | %-16d | %-12s | %-16d | %-12s", removido, grupo, popularidade, peso, tamanhoOrigem, nomeOrigem, tamanhoDestino, nomeDestino);
 
                 // Exibe o resultado formatado
                 System.out.println(resultado);
@@ -335,12 +367,28 @@ public class DataBase implements Conversor {
         // Chama o método para contar e exibir as tecnologias diferentes e os pares de tecnologias
         contarTecnologiasMenu(tecnologias);
         contarParesTecnologiasMenu(paresTecnologias);
+
+
+        try(RandomAccessFile file = new RandomAccessFile(filePath, "rw")){
+            file.seek(0);
+            setNroTecnologias(Conversor.intoBytes(String.valueOf(contarTecnologias(tecnologias)), 4));
+            setNroParesTecnologias(Conversor.intoBytes(String.valueOf(contarParesTecnologias(paresTecnologias)), 4));
+            setProxRRN(Conversor.intoBytes(String.valueOf(encontrarPrimeiroRegistroAtivo("dataBase.txt")), 4));
+            Arrays.fill(headerDB, (byte) '*');
+
+            System.arraycopy(status, 0, headerDB, 0, status.length);
+            System.arraycopy(proxRRN, 0, headerDB, 1, proxRRN.length);
+            System.arraycopy(nroTecnologias, 0, headerDB, 5, nroTecnologias.length);
+            System.arraycopy(nroParesTecnologias, 0, headerDB, 9, nroParesTecnologias.length);
+            file.write(headerDB);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     // Método para contar e exibir o número de tecnologias diferentes
     public static void contarTecnologiasMenu(Set<String> tecnologias) {
-        @SuppressWarnings("resource")
-        Scanner input = new Scanner(System.in);
+        @SuppressWarnings("resource") Scanner input = new Scanner(System.in);
         System.out.println("\nNúmero total de tecnologias diferentes: " + tecnologias.size());
 
         System.out.println("\nDeseja exibir a lista de tecnologias únicas? (S/N)");
@@ -362,8 +410,7 @@ public class DataBase implements Conversor {
 
     // Método para contar e exibir os pares de tecnologias únicos
     public static void contarParesTecnologiasMenu(Set<String> paresTecnologias) {
-        @SuppressWarnings("resource")
-        Scanner input = new Scanner(System.in);
+        @SuppressWarnings("resource") Scanner input = new Scanner(System.in);
         System.out.println("\nNúmero total de pares de tecnologias únicos: " + paresTecnologias.size());
 
         System.out.println("\nDeseja exibir a lista de pares de tecnologias únicas? (S/N)");
@@ -377,6 +424,10 @@ public class DataBase implements Conversor {
         } else {
             System.out.println("Operação concluída.");
         }
+    }
+
+    public static int contarParesTecnologias(Set<String> paresTecnologias) {
+        return paresTecnologias.size();
     }
 
     public int encontrarPrimeiroRegistroAtivo(String filePath) throws IOException {
@@ -403,9 +454,5 @@ public class DataBase implements Conversor {
         }
 
         return -1; // Retorna -1 se nenhum registro ativo for encontrado
-    }
-
-    public static int contarParesTecnologias(Set<String> paresTecnologias) {
-        return paresTecnologias.size();
     }
 }
