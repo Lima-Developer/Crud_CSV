@@ -146,8 +146,8 @@ public class DataBase implements Conversor {
 
     public void deleteRegister(int register) {
         try (RandomAccessFile raf = new RandomAccessFile("dataBase.txt", "rw")) {
-            raf.seek(13);
-            long pointer = (register) * 76;
+            
+            long pointer = 13 + (register) * 76;
             raf.seek(pointer);
 
             byte[] bLine = new byte[76];
@@ -165,8 +165,8 @@ public class DataBase implements Conversor {
 
     public void undeleteRegister(int register) {
         try (RandomAccessFile raf = new RandomAccessFile("dataBase.txt", "rw")) {
-            raf.seek(13);
-            long pointer = (register) * 76;
+            
+            long pointer = 13 + (register) * 76;
             raf.seek(pointer);
 
             byte[] bLine = new byte[76];
