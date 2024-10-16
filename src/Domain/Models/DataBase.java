@@ -336,7 +336,7 @@ public class DataBase implements Conversor {
     public static void contarTecnologiasMenu(Set<String> tecnologias) {
         @SuppressWarnings("resource")
         Scanner input = new Scanner(System.in);
-        System.out.println("\nNúmero total de tecnologias diferentes: " + tecnologias.size());
+        System.out.println("\nNúmero total de tecnologias diferentes: " + contarTecnologias(tecnologias));
 
         System.out.println("\nDeseja exibir a lista de tecnologias únicas? (S/N)");
         String resposta = input.nextLine().toUpperCase();
@@ -359,7 +359,7 @@ public class DataBase implements Conversor {
     public static void contarParesTecnologiasMenu(Set<String> paresTecnologias) {
         @SuppressWarnings("resource")
         Scanner input = new Scanner(System.in);
-        System.out.println("\nNúmero total de pares de tecnologias únicos: " + paresTecnologias.size());
+        System.out.println("\nNúmero total de pares de tecnologias únicos: " + contarParesTecnologias(paresTecnologias));
 
         System.out.println("\nDeseja exibir a lista de pares de tecnologias únicas? (S/N)");
         String resposta = input.nextLine().toUpperCase();
